@@ -1,0 +1,11 @@
+Links for sources I used in the Kaze and AKaze program:
+
+
+http://www.robesafe.com/personal/pablo.alcantarilla/kaze.html
+http://www.robesafe.com/personal/pablo.alcantarilla/papers/Alcantarilla13bmvc.pdf
+https://github.com/h2suzuki/fast_akaze
+https://github.com/pablofdezalc/kaze
+
+
+QT password
+Qt8963243
