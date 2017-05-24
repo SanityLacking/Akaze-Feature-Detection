@@ -73,6 +73,8 @@ cv::Mat frameSOURCE = cv::imread("IMAG0201.jpg", cv::IMREAD_GRAYSCALE);
 cv::String face_cascade_name = "haarcascades/haarcascade_frontalface_alt.xml";
 cv::CascadeClassifier face_cascade;
 void loadFaces();
+bool windowSetup = false;
+
 
 
 /*
@@ -355,7 +357,7 @@ void run_akaze2(barter<cv::Mat> & frame_barter_, std::atomic_int & t_state_, std
 #else
 	fps_stats fps{ "AKAZE" };
 #endif
-	bool side_by_side = false, tracking = false;
+	bool side_by_side = true, tracking = true;
 	for (;; fps.tick()) {
 
 		// Wait for a new frame to arrive
@@ -396,6 +398,9 @@ void run_akaze2(barter<cv::Mat> & frame_barter_, std::atomic_int & t_state_, std
 		if (!output.empty()) {
 			//cv::putText(output, "fps: " + std::to_string(fps), cv::Point(5, 15), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0, 0, 255, 255), 2);
 			cv::imshow(WIN_TITLE_OUTPUT, output);
+			if (windowSetup == false) {
+				//cv::moveWindow(WIN_TITLE_OUTPUT,650,50);
+			}
 		}
 		if (tracking) {
 			std::swap(frame, frame_ref);
@@ -483,7 +488,7 @@ int main(void)
 	std::cout << "camera setup" << std::endl;
 
 	// Setup the debug windows
-	cv::namedWindow(WIN_TITLE_INPUT, cv::WINDOW_AUTOSIZE);
+	//cv::namedWindow(WIN_TITLE_INPUT, cv::WINDOW_AUTOSIZE);
 	cv::namedWindow(WIN_TITLE_OUTPUT, cv::WINDOW_AUTOSIZE);
 
 
@@ -521,7 +526,7 @@ int main(void)
 	cap >> *frame;
 	while (!frame->empty()) {
 
-		cv::imshow(WIN_TITLE_INPUT, *frame);
+		//cv::imshow(WIN_TITLE_INPUT, *frame);
 		
 
 		// Put the frame to the shelf, so the akaze2 thread can take it
