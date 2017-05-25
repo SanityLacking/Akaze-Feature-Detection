@@ -387,6 +387,7 @@ void run_akaze2(barter<cv::Mat> & frame_barter_, std::atomic_int & t_state_, std
 
 		if (last_nkp > 0 && kp_ref.size() > 0) {
 			matcher.match(desc, desc_ref, matches);
+
 			remove_outliers_by_distance(kp, kp_ref, MATCH_HAMMING_RADIUS, matches, outliers1);
 		}
 
