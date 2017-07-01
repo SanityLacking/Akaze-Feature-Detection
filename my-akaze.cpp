@@ -84,6 +84,28 @@ void loadFaces() {
 	if (!face_cascade.load(face_cascade_name)) { printf("--(!)Error loading face\n"); };
 }
 
+//float angleBetween(const cv::Point &v1, const cv::Point &v2)
+//{
+//	float len1 = sqrt(v1.x * v1.x + v1.y * v1.y);
+//	float len2 = sqrt(v2.x * v2.x + v2.y * v2.y);
+//
+//	float dot = v1.x * v2.x + v1.y * v2.y;
+//
+//	float a = dot / (len1 * len2);
+//
+//	if (a >= 1.0)
+//		return 0.0;
+//	else if (a <= -1.0)
+//		return CV_PI;
+//	else
+//		return acos(a); // 0..PI
+//}
+//
+//float euclideanDist(cv::Point& p, cv::Point& q) {
+//	cv::Point diff = p - q;
+//	return cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+//}
+
 std::vector<cv::Rect> detectFaces(cv::Mat& frame) {
 	std::vector<cv::Rect> faces;
 	if (face_cascade.empty() == false) {
@@ -202,6 +224,9 @@ void draw_side_by_side(const cv::Mat & frame0_,
 		/* matchesMask */ std::vector<char>(),
 		/* flags */ cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS |
 		cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+
+	
+
 
 	if (!outliers1_.empty()) {
 		for (auto & m : outliers1_) {
@@ -390,14 +415,13 @@ void run_akaze2(barter<cv::Mat> & frame_barter_, std::atomic_int & t_state_, std
 
 			remove_outliers_by_distance(kp, kp_ref, MATCH_HAMMING_RADIUS, matches, outliers1);
 		}
-
+		
 		// Show the result
 		if (!side_by_side || frame_ref->empty())
 			draw_frame(*frame, kp, kp_ref, matches, outliers1, outliers2, outliers3, fps.last_fps(), output);
 		else
 			draw_side_by_side(*frame, *frame_ref, kp, kp_ref, matches, outliers1, outliers2, outliers3, fps.last_fps(), output);
-		if (!output.empty()) {
-			//cv::putText(output, "fps: " + std::to_string(fps), cv::Point(5, 15), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0, 0, 255, 255), 2);
+		if (!output.empty()) {			
 			cv::imshow(WIN_TITLE_OUTPUT, output);
 			if (windowSetup == false) {
 				//cv::moveWindow(WIN_TITLE_OUTPUT,650,50);
@@ -408,8 +432,27 @@ void run_akaze2(barter<cv::Mat> & frame_barter_, std::atomic_int & t_state_, std
 			std::swap(kp, kp_ref);
 			desc.copyTo(desc_ref);
 
-			//if face version
-			
+			float angle = 0;
+			int count = 0;
+			// get direction of pose
+			//for (size_t m = 0; m < matches.size(); m++)
+			//{
+			//		int i1 = matches[m].queryIdx;
+			//		int i2 = matches[m].trainIdx;
+			//		CV_Assert(i1 >= 0 && i1 < static_cast<int>(kp.size()));
+			//		CV_Assert(i2 >= 0 && i2 < static_cast<int>(kp_ref.size()));
+			//		//const cv::KeyPoint &kp1 = kp[i1], &kp2 = kp_ref[i2];
+			//		//angle += angleBetween(kp1.pt, kp2.pt);
+			//		//count++;
+			//		//float distance = matches[m].distance;
+			//	
+			//}
+			////if (count !=0 )
+			////	float avgAngle = angle / count;
+			////if face version
+		
+		
+
 			std::vector<cv::Rect> faces = detectFaces(*frame_ref);
 			
 		}
@@ -506,7 +549,7 @@ int main(void)
 		std::ref(t_state),
 		std::ref(t_cmd) };
 
-	cv::resize(frameSOURCE, frameSOURCE, cv::Size(frameSOURCE.cols / 4, frameSOURCE.rows / 4));
+	
 
 	// Allocate the memory for the input frame to exchange with akaze2_thread
 	auto frame = std::unique_ptr<cv::Mat>(new cv::Mat);
