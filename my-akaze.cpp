@@ -70,60 +70,7 @@ cv::Mat frameSOURCE = cv::imread("IMAG0201.jpg", cv::IMREAD_GRAYSCALE);
 #define MATCH_HAMMING_RADIUS             121.5f /* 1/4 of the descriptor size */
 
 
-cv::String face_cascade_name = "haarcascades/haarcascade_frontalface_alt.xml";
-cv::CascadeClassifier face_cascade;
-void loadFaces();
 bool windowSetup = false;
-
-
-
-/*
-Loads the face cascade
-*/
-void loadFaces() {
-	if (!face_cascade.load(face_cascade_name)) { printf("--(!)Error loading face\n"); };
-}
-
-//float angleBetween(const cv::Point &v1, const cv::Point &v2)
-//{
-//	float len1 = sqrt(v1.x * v1.x + v1.y * v1.y);
-//	float len2 = sqrt(v2.x * v2.x + v2.y * v2.y);
-//
-//	float dot = v1.x * v2.x + v1.y * v2.y;
-//
-//	float a = dot / (len1 * len2);
-//
-//	if (a >= 1.0)
-//		return 0.0;
-//	else if (a <= -1.0)
-//		return CV_PI;
-//	else
-//		return acos(a); // 0..PI
-//}
-//
-//float euclideanDist(cv::Point& p, cv::Point& q) {
-//	cv::Point diff = p - q;
-//	return cv::sqrt(diff.x*diff.x + diff.y*diff.y);
-//}
-
-std::vector<cv::Rect> detectFaces(cv::Mat& frame) {
-	std::vector<cv::Rect> faces;
-	if (face_cascade.empty() == false) {
-		face_cascade.detectMultiScale(frame, faces, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(40, 40), cv::Size(340, 340));
-	}
-
-	for (int i = 0; i < faces.size(); i++) {
-		for (int j = 0; j < faces.size(); j++) {
-			if ((faces[j].x > faces[i].x && faces[j].x < faces[i].x + faces[i].width) && (faces[j].y > faces[i].y && faces[j].y < faces[i].y + faces[i].height)) { // if j is within i 
-				if (faces[j].width + faces[j].height < faces[i].width + faces[i].height) {// if J is smaller then I
-																						  //cout << "overlapping faces detected" << endl;
-					faces.erase(faces.begin() + j);
-				}
-			}
-		}
-	}
-	return faces;
-}
 
 
 enum ThreadState {
@@ -451,10 +398,6 @@ void run_akaze2(barter<cv::Mat> & frame_barter_, std::atomic_int & t_state_, std
 			////	float avgAngle = angle / count;
 			////if face version
 		
-		
-
-			std::vector<cv::Rect> faces = detectFaces(*frame_ref);
-			
 		}
 
 		// Handle a thread command afterward
@@ -525,7 +468,6 @@ int main(void)
 		std::cerr << "Failed to connect the camera" << std::endl;
 		return -1;
 	}
-	loadFaces();
 	//cap.set(cv::CAP_PROP_FRAME_WIDTH, VIDEO_FRAME_WIDTH);
 	//cap.set(cv::CAP_PROP_FRAME_HEIGHT, VIDEO_FRAME_HEIGHT);
 	//cap.set(cv::CAP_PROP_FPS, VIDEO_FRAME_RATE);
